@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "packages/ui/**"
+      - "bun.lock"
       - "package.json"
       - ".github/workflows/publish.yml"
   workflow_dispatch:

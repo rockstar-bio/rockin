@@ -1,5 +1,5 @@
 {
-  "name": "rockstar-ui-monorepo",
+  "name": "studio",
   "private": true,
   "type": "module",
     "packageManager": "bun@1.4.0",

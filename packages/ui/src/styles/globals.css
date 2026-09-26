@@ -747,3 +747,105 @@ select:-webkit-autofill {
   --jelly-belly-glow: #fef3c7;
   --jelly-eye-sparkle: #fbbf24;
 }
+.code-block {
+  position: relative;
+}
+
+.code-block-content {
+  overflow: auto;
+}
+
+.code-block-content pre {
+  @apply m-0 bg-transparent! py-1;
+
+  font-family:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  font-size: 0.9375rem;
+  line-height: 1.75rem;
+  tab-size: 2;
+}
+
+.code-block-fallback {
+  @apply m-0 bg-transparent py-1;
+
+  font-family:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+
+  font-size: 0.9375rem;
+  line-height: 1.75rem;
+  tab-size: 2;
+}
+
+.code-block-content code {
+  display: block;
+  width: max-content;
+  min-width: 100%;
+
+  font-family: inherit;
+}
+
+/* Lines */
+
+.code-block-content .line {
+  display: block;
+  width: 100%;
+  min-width: max-content;
+}
+
+/* Line Numbers */
+
+.code-block-line-numbers code {
+  counter-reset: line;
+}
+
+.code-block-fallback-number {
+  display: inline-block;
+  width: 3rem;
+  min-width: 3rem;
+  box-sizing: border-box;
+  padding-right: 0.75rem;
+
+  color: #8a8a8a;
+  text-align: right;
+
+  user-select: none;
+  pointer-events: none;
+}
+
+.code-block-line-numbers .line::before {
+  counter-increment: line;
+  content: counter(line);
+
+  position: sticky;
+  left: 0;
+  z-index: 5;
+
+  display: inline-block;
+
+  /* Fixed gutter */
+  width: 3rem;
+  min-width: 3rem;
+  box-sizing: border-box;
+  padding-right: 0.75rem;
+
+  @apply bg-[#f7f7f7] dark:bg-[#111];
+
+  color: #8a8a8a;
+  text-align: right;
+
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Selection */
+
+.code-block-content ::selection {
+  background: rgb(0 0 0 / 10%);
+}
+
+.dark .code-block-content ::selection {
+  background: rgb(255 255 255 / 15%);
+}

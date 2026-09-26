@@ -4,8 +4,6 @@ out
 .next
 *.tsbuildinfo
 .DS_Store
-/apps/docs/AGENTS.md
-/apps/docs/CLAUDE.md
 
 # ===== ↑ 以上同步自 .gitignore（「从 .gitignore 同步」只重写以上部分）=====
 .git/

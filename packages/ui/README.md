@@ -5,7 +5,7 @@ Shared React UI for Rockstar projects.
 ## Install
 
 ```bash
-bun add rockin
+npm install rockin
 ```
 
 ## Usage
@@ -33,7 +33,7 @@ import * as Gravity from "rockin/gravity"
 ## Development
 
 ```bash
-bun install
-bun run typecheck
-bun run build
+npm install
+npm run typecheck
+npm run build
 ```

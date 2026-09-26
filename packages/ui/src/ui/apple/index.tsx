@@ -5,6 +5,10 @@ import { AppleHelloEffectEnglish } from "./english"
 import { AppleHelloEffectHindi } from "./hindi"
 import { AppleHelloEffectSpanish } from "./spanish"
 
+export { AppleHelloEffectEnglish } from "./english"
+export { AppleHelloEffectHindi } from "./hindi"
+export { AppleHelloEffectSpanish } from "./spanish"
+
 export function Apple() {
   const [index, setIndex] = useState(0)
 

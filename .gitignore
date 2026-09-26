@@ -4,5 +4,3 @@ out
 .next
 *.tsbuildinfo
 .DS_Store
-/apps/docs/AGENTS.md
-/apps/docs/CLAUDE.md

@@ -7,9 +7,9 @@
     "packages/*"
   ],
   "scripts": {
-    "build:ui": "bpm run build --workspace packages/ui",
-    "build": "bpm run build:ui",
-    "typecheck": "bpm run typecheck --workspace packages/ui",
+    "build:ui": "bun run --cwd packages/ui build",
+    "build": "bun run build:ui",
+    "typecheck": "bun run --cwd packages/ui typecheck",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

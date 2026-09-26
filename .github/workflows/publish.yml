@@ -28,6 +28,11 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: package.json
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -35,12 +40,12 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
-        run: npm install
+        run: bun install
 
       - name: Check types and build package
         run: |
-          npm run typecheck --workspace packages/ui
-          npm run build:ui
+          bun run typecheck
+          bun run build:ui
 
       - name: Increment patch version
         working-directory: packages/ui

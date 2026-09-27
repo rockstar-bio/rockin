@@ -1,16 +1,16 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import QRCodeLib from "qrcode";
-import { cn } from "cn";
+import * as React from "react"
+import QRCodeLib from "qrcode"
+import { cn } from "cn"
 
 interface QRCodeProps extends React.SVGProps<SVGSVGElement> {
-  value: string;
-  size?: number;
-  fgColor?: string;
-  bgColor?: string;
-  errorCorrectionLevel?: "L" | "M" | "Q" | "H";
-  className?: string;
+  value: string
+  size?: number
+  fgColor?: string
+  bgColor?: string
+  errorCorrectionLevel?: "L" | "M" | "Q" | "H"
+  className?: string
 }
 
 function isInFinderPattern(row: number, col: number, size: number): boolean {
@@ -18,7 +18,7 @@ function isInFinderPattern(row: number, col: number, size: number): boolean {
     (row < 7 && col < 7) ||
     (row < 7 && col >= size - 7) ||
     (row >= size - 7 && col < 7)
-  );
+  )
 }
 
 export function QRCode({
@@ -32,41 +32,44 @@ export function QRCode({
 }: QRCodeProps) {
   const qrData = React.useMemo(() => {
     try {
-      return QRCodeLib.create(value, { errorCorrectionLevel });
+      return QRCodeLib.create(value, { errorCorrectionLevel })
     } catch {
-      return null;
+      return null
     }
-  }, [value, errorCorrectionLevel]);
+  }, [value, errorCorrectionLevel])
 
   if (!qrData) {
-    return null;
+    return null
   }
 
-  const moduleCount = qrData.modules.size;
-  const moduleSize = size / moduleCount;
-  const totalSize = size;
-  const circleRadius = moduleSize * (1 / 3);
+  const moduleCount = qrData.modules.size
+  const moduleSize = size / moduleCount
+  const totalSize = size
+  const circleRadius = moduleSize * (1 / 3)
 
   const finderPositions: [number, number][] = [
     [0, 0],
     [0, moduleCount - 7],
     [moduleCount - 7, 0],
-  ];
+  ]
 
-  const finderSize = 7 * moduleSize;
-  const innerPadding = moduleSize;
-  const innerWhiteSize = 5 * moduleSize;
-  const innerBlackSize = 3 * moduleSize;
+  const finderSize = 7 * moduleSize
+  const innerPadding = moduleSize
+  const innerWhiteSize = 5 * moduleSize
+  const innerBlackSize = 3 * moduleSize
 
-  const circles: { cx: number; cy: number }[] = [];
+  const circles: { cx: number; cy: number }[] = []
 
   for (let row = 0; row < moduleCount; row++) {
     for (let col = 0; col < moduleCount; col++) {
-      if (qrData.modules.get(row, col) && !isInFinderPattern(row, col, moduleCount)) {
+      if (
+        qrData.modules.get(row, col) &&
+        !isInFinderPattern(row, col, moduleCount)
+      ) {
         circles.push({
           cx: (col + 0.5) * moduleSize,
           cy: (row + 0.5) * moduleSize,
-        });
+        })
       }
     }
   }
@@ -81,10 +84,16 @@ export function QRCode({
       className={cn("block", className)}
       {...props}
     >
-      <rect width={totalSize} height={totalSize} fill={bgColor} rx="12" ry="12" />
+      <rect
+        width={totalSize}
+        height={totalSize}
+        fill={bgColor}
+        rx="12"
+        ry="12"
+      />
       {finderPositions.map(([r, c]) => {
-        const x = c * moduleSize;
-        const y = r * moduleSize;
+        const x = c * moduleSize
+        const y = r * moduleSize
         return (
           <g key={`${r}-${c}`}>
             <rect
@@ -115,17 +124,11 @@ export function QRCode({
               ry="3"
             />
           </g>
-        );
+        )
       })}
       {circles.map(({ cx, cy }, i) => (
-        <circle
-          key={i}
-          cx={cx}
-          cy={cy}
-          r={circleRadius}
-          fill={fgColor}
-        />
+        <circle key={i} cx={cx} cy={cy} r={circleRadius} fill={fgColor} />
       ))}
     </svg>
-  );
+  )
 }

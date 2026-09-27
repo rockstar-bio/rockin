@@ -210,5 +210,5 @@ export {
   CommandList,
   CommandSeparator,
   CommandShortcut,
-  useCommandState
+  useCommandState,
 }

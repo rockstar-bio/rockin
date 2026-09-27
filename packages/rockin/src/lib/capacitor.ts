@@ -80,7 +80,14 @@ type NativeAppSettingsPlugin = {
 }
 
 export type NativeUpdateState = {
-  status: "downloading" | "downloaded" | "installing" | "installed" | "failed" | "canceled" | "unknown"
+  status:
+    | "downloading"
+    | "downloaded"
+    | "installing"
+    | "installed"
+    | "failed"
+    | "canceled"
+    | "unknown"
   bytesDownloaded: number
   totalBytesToDownload: number
 }

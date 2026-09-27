@@ -316,7 +316,7 @@ export function OTPInput({
                     isActive &&
                       !showSuccess &&
                       status !== "error" &&
-                      "border-brand border-2 ring-0",
+                      "border-2 border-brand ring-0",
                     disabled && "opacity-50"
                   )}
                 >
@@ -334,7 +334,7 @@ export function OTPInput({
                             }
                       }
                       className={cn(
-                        "bg-brand pointer-events-none absolute top-1/2 h-6 w-px -translate-y-1/2",
+                        "pointer-events-none absolute top-1/2 h-6 w-px -translate-y-1/2 bg-brand",
                         char ? "right-3" : "left-1/2 -translate-x-1/2"
                       )}
                     />

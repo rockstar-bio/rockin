@@ -1,8 +1,4 @@
-import {
-  createParser,
-  parseAsString,
-  parseAsStringLiteral,
-} from "nuqs"
+import { createParser, parseAsString, parseAsStringLiteral } from "nuqs"
 
 type SearchParamSource = Pick<URLSearchParams, "has" | "toString">
 

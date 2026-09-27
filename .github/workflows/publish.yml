@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "packages/ui/**"
+      - "packages/rockin/**"
       - "bun.lock"
       - "package.json"
       - ".github/workflows/publish.yml"
@@ -41,7 +41,7 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
-        run: bun install
+        run: bun install --frozen-lockfile
 
       - name: Check types and build package
         run: |
@@ -49,17 +49,17 @@ jobs:
           bun run build:ui
 
       - name: Increment patch version
-        working-directory: packages/ui
+        working-directory: packages/rockin
         run: npm version patch --no-git-tag-version --workspaces=false
 
       - name: Publish package to npm
-        run: npm publish ./packages/ui --access public
+        run: npm publish ./packages/rockin --access public
 
       - name: Commit published version
         run: |
-          VERSION=$(node -p "require('./packages/ui/package.json').version")
+          VERSION=$(node -p "require('./packages/rockin/package.json').version")
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add packages/ui/package.json
+          git add packages/rockin/package.json
           git commit -m "chore: release rockin@$VERSION [skip ci]"
           git push

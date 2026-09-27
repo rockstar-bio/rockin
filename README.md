@@ -10,12 +10,12 @@ Install from npm:
 bun add rockin
 ```
 
-See the [package documentation](packages/ui/README.md) for usage and development instructions.
+See the [package documentation](packages/rockin/README.md) for usage and development instructions.
 
 ## Documentation site
 
 The docs live in `apps/docs` — a static-exporting Next.js app powered by
-[Fumadocs](https://fumadocs.dev), rendering the components from `packages/ui`
+[Fumadocs](https://fumadocs.dev), rendering the components from `packages/rockin`
 live with real demo data.
 
 ```bash

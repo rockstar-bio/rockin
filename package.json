@@ -7,9 +7,9 @@
     "packages/*"
   ],
   "scripts": {
-    "build:ui": "bun run --cwd packages/ui build",
+    "build:ui": "bun run --cwd packages/rockin build",
     "build": "bun run build:ui",
-    "typecheck": "bun run --cwd packages/ui typecheck",
+    "typecheck": "bun run --cwd packages/rockin typecheck",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

@@ -361,6 +361,7 @@ export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
 
     return (
       <div
+        data-slot="input-group"
         className={cn(
           "shadow-raised inline-flex items-center rounded-full border",
           disabled && "opacity-50",
@@ -378,6 +379,7 @@ export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
             ref={ref}
             id={id}
             disabled={disabled}
+            data-slot="input-group-control"
             data-no-ring
             role="spinbutton"
             aria-label={label}

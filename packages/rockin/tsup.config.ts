@@ -5,6 +5,7 @@ export default defineConfig({
     index: "src/index.ts",
     cn: "src/cn.ts",
     loader: "src/loader.tsx",
+    provider: "src/provider.tsx",
     lucide: "src/lucide.ts",
     gravity: "src/gravity.ts",
     "ui/index": "src/ui/index.ts",

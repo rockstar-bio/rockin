@@ -50,6 +50,10 @@
       "types": "./dist/loader.d.ts",
       "import": "./dist/loader.js"
     },
+    "./provider": {
+      "types": "./dist/provider.d.ts",
+      "import": "./dist/provider.js"
+    },
     "./lucide": {
       "types": "./dist/lucide.d.ts",
       "import": "./dist/lucide.js"
@@ -141,6 +145,7 @@
     "nuqs": "^2.9.4",
     "openai": "^7.4.0",
     "qrcode": "^1.5.4",
+    "react-hotkeys-hook": "^5.3.3",
     "react-resizable-panels": "^4.13.3",
     "recharts": "^3.8.0",
     "shadcn": "^4.13.0",

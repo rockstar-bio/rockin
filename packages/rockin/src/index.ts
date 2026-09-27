@@ -1,6 +1,9 @@
+"use client"
+
 export * from "./icon"
 export { default as NumberFlow } from "@number-flow/react"
-export *  from "goey-toast"
-export *  from "motion/react"
-export *  from "next-themes"
+export * from "goey-toast"
+export * from "motion/react"
+export * from "next-themes"
 export * from "./loader"
+export * from "./provider"

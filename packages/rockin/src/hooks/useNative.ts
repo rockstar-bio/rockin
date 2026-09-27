@@ -1,3 +1,5 @@
+"use client"
+
 import { isNativeApp } from "#lib/index"
 import { useEffect, useState } from "react"
 

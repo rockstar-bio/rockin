@@ -29,7 +29,7 @@
     },
     "packages/rockin": {
       "name": "rockin",
-      "version": "0.0.15",
+      "version": "0.0.16",
       "dependencies": {
         "@ariakit/react": "^0.4.40",
         "@base-ui/react": "^1.6.0",

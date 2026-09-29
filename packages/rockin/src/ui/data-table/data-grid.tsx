@@ -347,6 +347,8 @@ export function GridAsyncComboboxCell({
   const selectedValue = value ?? String(cell.value ?? "")
   const [query, setQuery] = React.useState("")
   const [options, setOptions] = React.useState<GridComboboxOption[]>([])
+  const [selectedOption, setSelectedOption] =
+    React.useState<GridComboboxOption | null>(null)
   const [isLoading, setIsLoading] = React.useState(false)
   const requestId = React.useRef(0)
   const loadOptionsRef = React.useRef(loadOptions)
@@ -397,21 +399,23 @@ export function GridAsyncComboboxCell({
     }
   }, [debounceMs, minQueryLength, query, stableLoadOptions])
 
+  const selectedItem =
+    options.find((option) => option.value === selectedValue) ??
+    (selectedOption?.value === selectedValue ? selectedOption : null)
+
   return (
     <Combobox
       items={options}
-      itemToStringLabel={(item) =>
-        options.find((option) => option.value === item)?.label ??
-        String(item ?? "")
-      }
-      onValueChange={(nextValue) => {
-        if (nextValue === null) return
-        const option = options.find((item) => item.value === nextValue)
-        onChange?.(nextValue, option)
-        cell.grid.updateCell(cell.rowId, cell.columnId, nextValue)
-        setQuery(option?.label ?? nextValue)
+      itemToStringLabel={(item) => item?.label ?? ""}
+      itemToStringValue={(item) => item?.value ?? ""}
+      onValueChange={(nextOption) => {
+        if (nextOption === null) return
+        setSelectedOption(nextOption)
+        onChange?.(nextOption.value, nextOption)
+        cell.grid.updateCell(cell.rowId, cell.columnId, nextOption.value)
+        setQuery(nextOption.label)
       }}
-      value={selectedValue}
+      value={selectedItem}
     >
       <ComboboxInput
         className="h-7 w-full min-w-0 border-0 bg-transparent px-0 shadow-none"
@@ -429,7 +433,7 @@ export function GridAsyncComboboxCell({
           )}
         <ComboboxList>
           {options.map((option) => (
-            <ComboboxItem key={option.value} value={option.value}>
+            <ComboboxItem key={option.value} value={option}>
               {option.label}
             </ComboboxItem>
           ))}

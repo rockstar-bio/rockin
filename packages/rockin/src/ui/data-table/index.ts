@@ -1,4 +1,4 @@
-export { DataTableRoot, useDataTable } from "./core/data-table-root"
+export { DataTableRoot } from "./core/data-table-root"
 export { DataTable, DataTableCell, DataTableRow } from "./core/data-table"
 export {
   DataTableBody,
@@ -9,9 +9,25 @@ export {
 export { DataTablePagination } from "./components/data-table-pagination"
 export { DataTableSearchFilter } from "./components/data-table-search-filter"
 export { DataTableToolbarSection } from "./components/data-table-toolbar-section"
-export { useDataTablePagination } from "./hooks/use-data-table-pagination"
-export { useDataTableRows } from "./hooks/use-data-table-rows"
-export { useDataTableSearch } from "./hooks/use-data-table-search"
+export {
+  DataGrid,
+  DataGridCell,
+  DataGridColumn,
+  DataGridClipboard,
+  DataGridFillHandle,
+  DataGridMove,
+  DataGridRow,
+  DataTableColumnResize,
+  GridComboboxCell,
+  GridNumberCell,
+  GridTextCell,
+} from "./data-grid"
+export type {
+  CellState,
+  DataGridApi,
+  DataGridColumn as DataGridColumnDef,
+  UseDataGridOptions,
+} from "./data-grid"
 export type {
   DataTableColumn,
   DataTableColumnDef,

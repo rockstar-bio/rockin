@@ -18,6 +18,7 @@ export {
   DataGridMove,
   DataGridRow,
   DataTableColumnResize,
+  GridAsyncComboboxCell,
   GridComboboxCell,
   GridNumberCell,
   GridTextCell,
@@ -26,6 +27,8 @@ export type {
   CellState,
   DataGridApi,
   DataGridColumn as DataGridColumnDef,
+  GridAsyncComboboxCellProps,
+  GridComboboxOption,
   UseDataGridOptions,
 } from "./data-grid"
 export type {

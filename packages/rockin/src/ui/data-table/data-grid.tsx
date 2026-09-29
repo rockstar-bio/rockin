@@ -3,8 +3,31 @@
 import * as React from "react"
 
 import { cn } from "cn"
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "../combobox"
+import { Input } from "../input"
 
 export type CellState = "valid" | "invalid" | "pending"
+
+export type GridComboboxOption = {
+  label: string
+  value: string
+}
+
+export type GridAsyncComboboxCellProps = {
+  value?: string
+  onChange?: (value: string, option?: GridComboboxOption) => void
+  loadOptions: (query: string) => Promise<GridComboboxOption[]>
+  placeholder?: string
+  minQueryLength?: number
+  debounceMs?: number
+}
 
 export type DataGridColumn<TData = Record<string, unknown>> = {
   id: string
@@ -235,7 +258,7 @@ export function GridTextCell({
   const currentValue = value ?? String(cell.value ?? "")
 
   return (
-    <input
+    <Input
       className="h-7 w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
       onChange={(event) => {
         const nextValue = event.target.value
@@ -260,7 +283,7 @@ export function GridNumberCell({
     value ?? (typeof cell.value === "number" ? cell.value : "")
 
   return (
-    <input
+    <Input
       className="h-7 w-full min-w-0 bg-transparent text-sm outline-none"
       onChange={(event) => {
         const nextValue = event.target.valueAsNumber
@@ -279,7 +302,7 @@ export function GridComboboxCell({
   value,
   onChange,
 }: {
-  options: { label: string; value: string }[]
+  options: GridComboboxOption[]
   value?: string
   onChange?: (value: string) => void
 }) {
@@ -287,21 +310,132 @@ export function GridComboboxCell({
   const currentValue = value ?? String(cell.value ?? "")
 
   return (
-    <select
-      className="h-7 w-full min-w-0 bg-transparent text-sm outline-none"
-      onChange={(event) => {
-        const nextValue = event.target.value
+    <Combobox
+      onValueChange={(nextValue) => {
+        if (nextValue === null) return
         onChange?.(nextValue)
         cell.grid.updateCell(cell.rowId, cell.columnId, nextValue)
       }}
       value={currentValue}
     >
-      {options.map((option) => (
-        <option key={option.value} value={option.value}>
-          {option.label}
-        </option>
-      ))}
-    </select>
+      <ComboboxInput
+        className="h-7 w-full min-w-0 border-0 bg-transparent px-0 shadow-none"
+        showClear={false}
+      />
+      <ComboboxContent>
+        <ComboboxList>
+          {options.map((option) => (
+            <ComboboxItem key={option.value} value={option.value}>
+              {option.label}
+            </ComboboxItem>
+          ))}
+        </ComboboxList>
+      </ComboboxContent>
+    </Combobox>
+  )
+}
+
+export function GridAsyncComboboxCell({
+  value,
+  onChange,
+  loadOptions,
+  placeholder = "Search...",
+  minQueryLength = 0,
+  debounceMs = 250,
+}: GridAsyncComboboxCellProps) {
+  const cell = useGridCell()
+  const selectedValue = value ?? String(cell.value ?? "")
+  const [query, setQuery] = React.useState("")
+  const [options, setOptions] = React.useState<GridComboboxOption[]>([])
+  const [isLoading, setIsLoading] = React.useState(false)
+  const requestId = React.useRef(0)
+  const loadOptionsRef = React.useRef(loadOptions)
+
+  React.useEffect(() => {
+    loadOptionsRef.current = loadOptions
+  }, [loadOptions])
+
+  const stableLoadOptions = React.useCallback(
+    (search: string) => loadOptionsRef.current(search),
+    []
+  )
+
+  React.useEffect(() => {
+    const currentRequestId = ++requestId.current
+    const normalizedQuery = query.trim()
+
+    if (normalizedQuery.length < minQueryLength) {
+      setOptions([])
+      setIsLoading(false)
+      return
+    }
+
+    const timeout = window.setTimeout(async () => {
+      setIsLoading(true)
+
+      try {
+        const nextOptions = await stableLoadOptions(normalizedQuery)
+        if (currentRequestId === requestId.current) {
+          setOptions(nextOptions)
+        }
+      } catch {
+        if (currentRequestId === requestId.current) {
+          setOptions([])
+        }
+      } finally {
+        if (currentRequestId === requestId.current) {
+          setIsLoading(false)
+        }
+      }
+    }, debounceMs)
+
+    return () => {
+      window.clearTimeout(timeout)
+      if (requestId.current === currentRequestId) {
+        requestId.current += 1
+      }
+    }
+  }, [debounceMs, minQueryLength, query, stableLoadOptions])
+
+  return (
+    <Combobox
+      items={options}
+      itemToStringLabel={(item) =>
+        options.find((option) => option.value === item)?.label ??
+        String(item ?? "")
+      }
+      onValueChange={(nextValue) => {
+        if (nextValue === null) return
+        const option = options.find((item) => item.value === nextValue)
+        onChange?.(nextValue, option)
+        cell.grid.updateCell(cell.rowId, cell.columnId, nextValue)
+        setQuery(option?.label ?? nextValue)
+      }}
+      value={selectedValue}
+    >
+      <ComboboxInput
+        className="h-7 w-full min-w-0 border-0 bg-transparent px-0 shadow-none"
+        onChange={(event) => setQuery(event.target.value)}
+        placeholder={placeholder}
+        showClear={false}
+        value={query}
+      />
+      <ComboboxContent>
+        {isLoading && <ComboboxEmpty>Loading...</ComboboxEmpty>}
+        {!isLoading &&
+          query.trim().length >= minQueryLength &&
+          options.length === 0 && (
+            <ComboboxEmpty>No results found.</ComboboxEmpty>
+          )}
+        <ComboboxList>
+          {options.map((option) => (
+            <ComboboxItem key={option.value} value={option.value}>
+              {option.label}
+            </ComboboxItem>
+          ))}
+        </ComboboxList>
+      </ComboboxContent>
+    </Combobox>
   )
 }
 

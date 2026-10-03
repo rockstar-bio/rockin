@@ -30,8 +30,10 @@ function isSearchPath(pathname: string) {
     pathname === "/" ||
     pathname === "/pos" ||
     pathname === "/orders" ||
+    pathname === "/bin" ||
     pathname.startsWith("/pos/") ||
-    pathname.startsWith("/orders/")
+    pathname.startsWith("/orders/") ||
+    pathname.startsWith("/bin/")
   )
 }
 

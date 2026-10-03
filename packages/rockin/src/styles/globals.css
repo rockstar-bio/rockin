@@ -95,6 +95,8 @@
   --color-chart-foreground: var(----chart-foreground);
   --color-chart-background: var(----chart-background);
   --animate-skeleton: skeleton 2s -1s infinite linear;
+  --color-selection: var(--selection);
+  --color-selection-foreground: var(--selection-foreground);
   @keyframes skeleton {
     to {
       background-position: -200% 0;
@@ -188,6 +190,8 @@
   --chart-scale-04: oklch(0.68 0.02 106);
   --chart-scale-05: oklch(0.55 0.025 106);
   --chart-scale-pattern-color: oklch(0.96 0.005 106);
+  --selection: oklch(0.145 0 0);
+  --selection-foreground: oklch(1 0 0);
 }
 
 .t-icon-swap {
@@ -292,6 +296,8 @@
   --chart-scale-04: oklch(0.58 0.06 270);
   --chart-scale-05: oklch(0.68 0.07 270);
   --chart-scale-pattern-color: oklch(0.145 0 0);
+  --selection: oklch(0.145 0 0);
+  --selection-foreground: oklch(1 0 0);
 }
 
 @media (display-mode: standalone) {

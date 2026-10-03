@@ -2,7 +2,7 @@
   "name": "studio",
   "private": true,
   "type": "module",
-    "packageManager": "bun@1.4.0",
+  "packageManager": "bun@1.4.0",
   "workspaces": [
     "packages/*",
     "apps/*"
@@ -20,5 +20,8 @@
   "devDependencies": {
     "prettier": "^3.9.8",
     "prettier-plugin-tailwindcss": "^0.8.1"
+  },
+  "dependencies": {
+    "rockin": "workspace:*"
   }
 }

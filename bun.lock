@@ -4,6 +4,9 @@
   "workspaces": {
     "": {
       "name": "rockstar-ui-monorepo",
+      "dependencies": {
+        "rockin": "workspace:*",
+      },
       "devDependencies": {
         "prettier": "^3.9.8",
         "prettier-plugin-tailwindcss": "^0.8.1",
@@ -29,7 +32,7 @@
     },
     "packages/rockin": {
       "name": "rockin",
-      "version": "0.0.16",
+      "version": "0.0.23",
       "dependencies": {
         "@ariakit/react": "^0.4.40",
         "@base-ui/react": "^1.6.0",

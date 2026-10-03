@@ -464,16 +464,25 @@ select:-webkit-autofill {
 }
 
 @utility app-container {
+  --app-container-gutter: 0.5rem;
   width: 100%;
   margin-inline: auto;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
+  padding-left: var(--app-container-gutter);
+  padding-right: var(--app-container-gutter);
   flex-grow: 1;
 
   @media (width >= 96rem) {
-    padding-left: 10%;
-    padding-right: 10%;
+    --app-container-gutter: 10vw;
   }
+}
+
+@utility app-header {
+  width: calc(100% + (2 * var(--app-container-gutter, 0.5rem)));
+  margin-inline: calc(-1 * var(--app-container-gutter, 0.5rem));
+}
+
+@utility app-header-inner {
+  padding-inline: var(--app-container-gutter, 0.5rem);
 }
 
 @utility app-section {

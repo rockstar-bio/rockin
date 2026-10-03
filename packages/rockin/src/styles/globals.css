@@ -339,7 +339,8 @@ html[data-native-app="true"][data-native-device="mac"] {
     margin-right: 0 !important;
   }
   ::selection {
-    @apply bg-selection text-selection-foreground;
+    background-color: var(--selection);
+    color: var(--selection-foreground);
   }
   ::-webkit-scrollbar {
     width: 5px;

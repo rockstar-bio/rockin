@@ -52,21 +52,20 @@ const sizeStyles = {
 
 // "pill" is the default rounded look. "outline" is a compact, flat box for
 // dense lists like cart lines: square ghost buttons and a mono number.
+// Disabled styles key off the button's own `disabled` attribute, so the faded
+// look always lands on the button that can't be pressed.
 const variantStyles = {
   pill: {
     container: "shadow-raised rounded-full",
     button:
-      "rounded-full text-foreground hover:bg-foreground/6 active:scale-[0.96]",
-    limit: "opacity-35 hover:bg-transparent",
+      "rounded-full text-foreground enabled:hover:bg-foreground/6 enabled:active:scale-[0.96] disabled:opacity-35",
     text: "font-medium",
   },
   outline: {
     container:
       "rounded-lg bg-background p-0! transition-[border-color,box-shadow] duration-150 ease-out focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/15",
     button:
-      "rounded-md text-muted-foreground hover:bg-muted hover:text-foreground active:scale-[0.94]",
-    limit:
-      "text-muted-foreground/35 hover:bg-transparent hover:text-muted-foreground/35",
+      "rounded-md text-foreground enabled:hover:bg-muted enabled:active:scale-[0.94] disabled:text-muted-foreground/40",
     text: "font-mono font-medium tracking-tight",
   },
 } as const
@@ -370,8 +369,7 @@ export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
           "flex shrink-0 touch-manipulation items-center justify-center outline-hidden select-none disabled:cursor-not-allowed",
           styles.button,
           "transition-[scale,opacity,background-color,color] duration-150 ease-out motion-reduce:transition-[opacity,background-color,color]",
-          look.button,
-          (disabled || atLimit) && look.limit
+          look.button
         )}
       >
         <svg
@@ -404,7 +402,7 @@ export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
           styles.button,
           "transition-[scale,background-color,color] duration-150 ease-out motion-reduce:transition-[background-color,color]",
           look.button,
-          "hover:bg-destructive/10 hover:text-destructive"
+          "enabled:hover:bg-destructive/10 enabled:hover:text-destructive"
         )}
       >
         <svg
@@ -497,7 +495,7 @@ export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
               }
             }}
             className={cn(
-              "col-start-1 row-start-1 w-full bg-transparent text-center tabular-nums caret-foreground outline-hidden selection:bg-ring/25 disabled:cursor-not-allowed",
+              "col-start-1 row-start-1 w-full bg-transparent text-center tabular-nums caret-foreground outline-hidden selection:bg-ring/25 selection:text-foreground disabled:cursor-not-allowed",
               styles.text,
               look.text,
               editing ? "text-foreground" : "text-transparent"

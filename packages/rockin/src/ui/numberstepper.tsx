@@ -50,6 +50,27 @@ const sizeStyles = {
   },
 } as const
 
+// "pill" is the default rounded look. "outline" is a compact, flat box for
+// dense lists like cart lines: square ghost buttons and a mono number.
+const variantStyles = {
+  pill: {
+    container: "shadow-raised rounded-full",
+    button:
+      "rounded-full text-foreground hover:bg-foreground/6 active:scale-[0.96]",
+    limit: "opacity-35 hover:bg-transparent",
+    text: "font-medium",
+  },
+  outline: {
+    container:
+      "rounded-lg bg-background p-0! transition-[border-color,box-shadow] duration-150 ease-out focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/15",
+    button:
+      "rounded-md text-muted-foreground hover:bg-muted hover:text-foreground active:scale-[0.94]",
+    limit:
+      "text-muted-foreground/35 hover:bg-transparent hover:text-muted-foreground/35",
+    text: "font-mono font-medium tracking-tight",
+  },
+} as const
+
 type Direction = 1 | -1
 
 function useDirection(value: number) {
@@ -168,7 +189,11 @@ type NumberStepperProps = {
   step?: number
   className?: string
   size?: keyof typeof sizeStyles
+  variant?: keyof typeof variantStyles
   disabled?: boolean
+  /** When set, the − button becomes a delete button once the value is at `min`. */
+  onRemove?: () => void
+  removeLabel?: string
   onFocus?: React.FocusEventHandler<HTMLInputElement>
   onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>
   onKeyDownCapture?: React.KeyboardEventHandler<HTMLInputElement>
@@ -185,7 +210,10 @@ export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
       step = 1,
       className,
       size = "default",
+      variant = "pill",
       disabled = false,
+      onRemove,
+      removeLabel = "Remove",
       onFocus,
       onKeyDown,
       onKeyDownCapture,
@@ -305,6 +333,9 @@ export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
       setTo(parsed, parsed > latest.current.value ? 1 : -1)
     }
 
+    const styles = sizeStyles[size]
+    const look = variantStyles[variant]
+
     const button = (
       delta: number,
       atLimit: boolean,
@@ -336,10 +367,11 @@ export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
           }
         }}
         className={cn(
-          "flex shrink-0 touch-manipulation items-center justify-center rounded-full text-foreground outline-hidden select-none",
+          "flex shrink-0 touch-manipulation items-center justify-center outline-hidden select-none disabled:cursor-not-allowed",
           styles.button,
-          "transition-[scale,opacity,background-color] duration-150 ease-out hover:bg-foreground/6 active:scale-[0.96] motion-reduce:transition-[opacity,background-color]",
-          (disabled || atLimit) && "opacity-35 hover:bg-transparent"
+          "transition-[scale,opacity,background-color,color] duration-150 ease-out motion-reduce:transition-[opacity,background-color,color]",
+          look.button,
+          (disabled || atLimit) && look.limit
         )}
       >
         <svg
@@ -356,20 +388,57 @@ export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
       </button>
     )
 
+    // Separate key so a press that holds − down to `min` can't land as a
+    // click on the delete button that replaces it.
+    const removeButton = (
+      <button
+        key="remove"
+        type="button"
+        disabled={disabled}
+        aria-label={removeLabel}
+        onClick={() => {
+          if (!disabled) onRemove?.()
+        }}
+        className={cn(
+          "flex shrink-0 touch-manipulation items-center justify-center outline-hidden select-none focus-visible:ring-2 focus-visible:ring-ring/50 disabled:cursor-not-allowed",
+          styles.button,
+          "transition-[scale,background-color,color] duration-150 ease-out motion-reduce:transition-[background-color,color]",
+          look.button,
+          "hover:bg-destructive/10 hover:text-destructive"
+        )}
+      >
+        <svg
+          viewBox="0 0 16 16"
+          aria-hidden
+          className={styles.icon}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={1.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M2.75 4.5h10.5M6.25 4.5V3h3.5v1.5M4.25 4.5l.6 8.5h6.3l.6-8.5M6.75 7v3.5M9.25 7v3.5" />
+        </svg>
+      </button>
+    )
+
     const editing = draft !== null
-    const styles = sizeStyles[size]
 
     return (
       <div
         data-slot="input-group"
+        data-variant={variant}
         className={cn(
-          "shadow-raised inline-flex items-center rounded-full border",
-          disabled && "opacity-50",
+          "inline-flex items-center border",
+          disabled && "cursor-not-allowed opacity-50",
           styles.container,
+          look.container,
           className
         )}
       >
-        {button(-step, value <= min, "Decrease", "M3.5 8h9")}
+        {onRemove && value <= min
+          ? removeButton
+          : button(-step, value <= min, "Decrease", "M3.5 8h9")}
 
         <span
           ref={valueRef}
@@ -428,8 +497,9 @@ export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
               }
             }}
             className={cn(
-              "col-start-1 row-start-1 w-full bg-transparent text-center font-medium tabular-nums caret-foreground outline-hidden",
+              "col-start-1 row-start-1 w-full bg-transparent text-center tabular-nums caret-foreground outline-hidden selection:bg-ring/25 disabled:cursor-not-allowed",
               styles.text,
+              look.text,
               editing ? "text-foreground" : "text-transparent"
             )}
           />
@@ -438,8 +508,9 @@ export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
             <RollingNumber
               value={value}
               className={cn(
-                "pointer-events-none col-start-1 row-start-1 font-medium text-foreground",
-                styles.text
+                "pointer-events-none col-start-1 row-start-1 text-foreground",
+                styles.text,
+                look.text
               )}
             />
           )}

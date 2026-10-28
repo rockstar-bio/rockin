@@ -1,5 +1,6 @@
 "use client"
 
+import { TrashBin } from "@gravity-ui/icons"
 import { cn } from "cn"
 import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import {
@@ -405,18 +406,7 @@ export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
           "enabled:hover:bg-destructive/10 enabled:hover:text-destructive"
         )}
       >
-        <svg
-          viewBox="0 0 16 16"
-          aria-hidden
-          className={styles.icon}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth={1.5}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M2.75 4.5h10.5M6.25 4.5V3h3.5v1.5M4.25 4.5l.6 8.5h6.3l.6-8.5M6.75 7v3.5M9.25 7v3.5" />
-        </svg>
+        <TrashBin aria-hidden className={cn("size-3!", styles.icon)} />
       </button>
     )
 

@@ -38,7 +38,7 @@ export function Image({
   onLoad,
   onError,
   children,
-  fallback = <JellyMini mood="curious" className="size-full p-4" />,
+  fallback = <JellyMini mood="curious" className="size-full p-[12%]" />,
   ...props
 }: ImageProps) {
   const currentSrc = srcValue(src)

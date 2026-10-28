@@ -50,7 +50,20 @@ jobs:
 
       - name: Increment patch version
         working-directory: packages/rockin
-        run: npm version patch --no-git-tag-version --workspaces=false
+        run: |
+          LOCAL_VERSION=$(node -p "require('./package.json').version")
+          PUBLISHED_VERSION=$(npm view rockin version)
+          NEXT_VERSION=$(node -e '
+            const versions = process.argv.slice(1).map((version) => version.split(".").map(Number));
+            const base = versions.sort((a, b) => {
+              for (let i = 0; i < 3; i++) {
+                if (a[i] !== b[i]) return b[i] - a[i];
+              }
+              return 0;
+            })[0];
+            console.log(`${base[0]}.${base[1]}.${base[2] + 1}`);
+          ' "$LOCAL_VERSION" "$PUBLISHED_VERSION")
+          npm version "$NEXT_VERSION" --no-git-tag-version --workspaces=false
 
       - name: Publish package to npm
         run: npm publish ./packages/rockin --access public

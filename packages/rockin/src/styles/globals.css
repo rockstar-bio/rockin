@@ -372,6 +372,10 @@ html[data-native-app="true"][data-native-device="mac"] {
     font-synthesis-weight: none;
     text-rendering: optimizeLegibility;
     -webkit-tap-highlight-color: transparent;
+    /* Keep content clear of side safe areas: landscape notches and the
+     * iPhone Duo sensor strip, which iOS reports as a side inset. */
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
     @apply bg-background text-foreground;
   }
   [data-slot="layout"] {

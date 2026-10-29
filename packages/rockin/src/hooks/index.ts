@@ -5,6 +5,7 @@ export * from "./useMediaQuery"
 export * from "./useMounted"
 export * from "./useNative"
 export * from "./useSearchParams"
+export * from "./useSideRail"
 
 // Data table state hooks live here so consumers can keep table behavior
 // separate from the visual components imported from `rockin/ui`.

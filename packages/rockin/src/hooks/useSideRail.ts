@@ -1,3 +1,4 @@
+import { isNativeApp } from "#lib/index"
 import { useSyncExternalStore } from "react"
 
 export type SideRail = "left" | "right" | null
@@ -26,6 +27,8 @@ function readInsets() {
 }
 
 function getSnapshot(): SideRail {
+  // Only inside the Capacitor app; browsers (even Safari on the same phone) keep the normal layout.
+  if (!isNativeApp()) return null
   const { left, right } = readInsets()
   if (right >= RAIL_MIN_INSET && left <= RAIL_MAX_OPPOSITE) return "right"
   if (left >= RAIL_MIN_INSET && right <= RAIL_MAX_OPPOSITE) return "left"
@@ -33,6 +36,7 @@ function getSnapshot(): SideRail {
 }
 
 function subscribe(onChange: () => void) {
+  if (!isNativeApp()) return () => {}
   // iOS can apply new safe-area insets after the resize event on rotation or
   // fold/unfold. The probe's border box is its padding, so watching its size
   // catches the inset change itself.
@@ -59,7 +63,8 @@ function subscribe(onChange: () => void) {
 
 /**
  * Which screen edge has a wide, empty safe-area strip that can hold a vertical
- * nav rail, such as the sensor column on the iPhone Duo. `null` everywhere else.
+ * nav rail, such as the sensor column on the iPhone Duo. Only reported inside
+ * the native Capacitor app; `null` in every browser and on other screens.
  */
 export function useSideRail(): SideRail {
   return useSyncExternalStore(subscribe, getSnapshot, () => null)

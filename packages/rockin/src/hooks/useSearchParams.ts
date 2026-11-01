@@ -1,9 +1,9 @@
 "use client"
 
 import {
+  useSearchParams as useNextSearchParams,
   usePathname,
   useRouter,
-  useSearchParams as useNextSearchParams,
 } from "next/navigation"
 import {
   debounce,
@@ -22,8 +22,8 @@ import {
 
 export { NuqsAdapter }
 
-const SEARCH_DELAY = 500
-const PRODUCT_SEARCH_DELAY = 800
+const SEARCH_DELAY = 300
+const QUERY_SEARCH_DELAY = 300
 
 function isSearchPath(pathname: string) {
   return (
@@ -85,9 +85,7 @@ export function useSearchParams() {
           history: "replace",
           scroll: false,
           shallow: !onSearchPath,
-          limitUrlUpdates: debounce(
-            onSearchPath ? SEARCH_DELAY : PRODUCT_SEARCH_DELAY
-          ),
+          limitUrlUpdates: debounce(QUERY_SEARCH_DELAY),
         }
       )
 

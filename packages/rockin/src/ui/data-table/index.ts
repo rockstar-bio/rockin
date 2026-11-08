@@ -1,3 +1,5 @@
+"use client"
+
 export { DataTableRoot } from "./core/data-table-root"
 export { DataTable, DataTableCell, DataTableRow } from "./core/data-table"
 export {

@@ -1,7 +1,7 @@
 "use client"
 
 import { GooeyToaster, type GooeyToasterProps } from "goey-toast"
-import { useTheme } from "next-themes"
+import { useTheme } from "../theme"
 
 const Toaster = ({ closeButton = "top-left", ...props }: GooeyToasterProps) => {
   const { theme = "system" } = useTheme()

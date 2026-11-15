@@ -1,16 +1,16 @@
 "use client"
 
-import { usePathname } from "next/navigation"
 import * as React from "react"
-import { useHotkeys } from "react-hotkeys-hook"
 
 import { useFullscreen } from "#hooks/useFullscreen"
 import { useNative } from "#hooks/useNative"
 
 import { TooltipProvider } from "#components/tooltip"
+import { usePreference } from "@ui-sdk/react/preferences"
+import { useShortcut } from "@ui-sdk/react/shortcuts"
 import { GooeyToaster } from "goey-toast"
-import { ThemeProvider, useTheme } from "next-themes"
 import { TopLoader } from "./loader"
+import { PreferencesProvider, usePreferences, useTheme } from "./theme"
 
 export const browserThemeColors = {
   light: "#ffffff",
@@ -19,125 +19,80 @@ export const browserThemeColors = {
 
 export type BrowserTheme = keyof typeof browserThemeColors
 export type BrowserThemeColors = Record<BrowserTheme, string>
-export type ProviderProps = React.ComponentProps<typeof ThemeProvider> & {
+export type ClientProviderProps = {
+  children?: React.ReactNode
+  /** The request's `Cookie` header, so saved preferences render on the server. */
+  cookie?: string | null
   light?: string
   dark?: string
   fullscreen?: boolean
 }
 
-function syncBrowserChrome(theme: BrowserTheme, colors: BrowserThemeColors) {
-  const themeColor = colors[theme]
-  const statusBarStyle = theme === "dark" ? "black-translucent" : "default"
-  const themeColorMetas = document.querySelectorAll<HTMLMetaElement>(
-    'meta[name="theme-color"]'
-  )
-
-  if (themeColorMetas.length) {
-    themeColorMetas.forEach((meta) => {
-      if (meta.content !== themeColor) {
-        meta.content = themeColor
-      }
-    })
-  } else {
-    const meta = document.createElement("meta")
-    meta.name = "theme-color"
-    meta.content = themeColor
-    document.head.appendChild(meta)
-  }
-
-  const statusBarMetas = document.querySelectorAll<HTMLMetaElement>(
-    'meta[name="apple-mobile-web-app-status-bar-style"]'
-  )
-
-  if (statusBarMetas.length) {
-    statusBarMetas.forEach((meta) => {
-      if (meta.content !== statusBarStyle) {
-        meta.content = statusBarStyle
-      }
-    })
-  } else {
-    const meta = document.createElement("meta")
-    meta.name = "apple-mobile-web-app-status-bar-style"
-    meta.content = statusBarStyle
-    document.head.appendChild(meta)
-  }
-
-  if (document.documentElement.style.colorScheme !== theme) {
-    document.documentElement.style.colorScheme = theme
-  }
-
-  if (document.documentElement.style.backgroundColor !== themeColor) {
-    document.documentElement.style.backgroundColor = themeColor
-  }
-}
-
-function observeBrowserChrome(theme: BrowserTheme, colors: BrowserThemeColors) {
-  const observer = new MutationObserver(() => {
-    syncBrowserChrome(theme, colors)
-  })
-
-  observer.observe(document.head, {
-    childList: true,
-    subtree: true,
-    attributes: true,
-    attributeFilter: ["content"],
-  })
-
-  return observer
-}
-
-function useBrowserTheme(): BrowserTheme {
-  const { resolvedTheme } = useTheme()
-
-  return resolvedTheme === "dark" ? "dark" : "light"
-}
-
-function BrowserThemeSync({ light, dark }: BrowserThemeColors) {
-  const pathname = usePathname()
-  const theme = useBrowserTheme()
-  const colors = React.useMemo(() => ({ light, dark }), [dark, light])
-
-  React.useLayoutEffect(() => {
-    syncBrowserChrome(theme, colors)
-  }, [colors, pathname, theme])
+/**
+ * The browser's theme color and page background, rendered from ui-sdk's color scheme.
+ * React hoists the tags into <head> and renders them on the server, so they're right
+ * before the first paint; for "system" the browser follows the device by itself.
+ */
+function BrowserChrome({ light, dark }: BrowserThemeColors) {
+  const { colorScheme } = usePreferences()
+  const { value, resolved } = usePreference(colorScheme)
 
   React.useEffect(() => {
-    const observer = observeBrowserChrome(theme, colors)
+    if (resolved === "unknown") return
+    const style = resolved === "dark" ? "black-translucent" : "default"
+    for (const meta of document.head.querySelectorAll<HTMLMetaElement>(
+      'meta[name="apple-mobile-web-app-status-bar-style"]'
+    ))
+      meta.content = style
+    window.dispatchEvent(
+      new CustomEvent("kdpower:theme-change", { detail: { theme: resolved } })
+    )
+  }, [resolved])
 
-    return () => {
-      observer.disconnect()
-    }
-  }, [colors, theme])
-
-  return null
+  return (
+    <>
+      {value === "system" ? (
+        <>
+          <meta
+            name="theme-color"
+            media="(prefers-color-scheme: light)"
+            content={light}
+          />
+          <meta
+            name="theme-color"
+            media="(prefers-color-scheme: dark)"
+            content={dark}
+          />
+        </>
+      ) : (
+        <meta name="theme-color" content={value === "dark" ? dark : light} />
+      )}
+      <style href={`rockin-chrome-${light}-${dark}`} precedence="default">
+        {`:root{background-color:light-dark(${light},${dark})}`}
+      </style>
+    </>
+  )
 }
 
-export function Provider({
+export function ClientProvider({
   children,
   light = browserThemeColors.light,
   dark = browserThemeColors.dark,
   fullscreen = true,
-  ...props
-}: ProviderProps) {
+  cookie,
+}: ClientProviderProps) {
   return (
     <TooltipProvider>
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="system"
-        enableSystem
-        disableTransitionOnChange
-        {...props}
-      >
+      <PreferencesProvider cookie={cookie}>
         <TopLoader>
           <AppToaster />
           <AppStatusBarBackground />
-          <NativeThemeEventSync />
-          <BrowserThemeSync light={light} dark={dark} />
+          <BrowserChrome light={light} dark={dark} />
           <ThemeHotkey />
           {fullscreen ? <FullscreenHotkey /> : null}
           {children}
         </TopLoader>
-      </ThemeProvider>
+      </PreferencesProvider>
     </TooltipProvider>
   )
 }
@@ -165,67 +120,14 @@ function AppStatusBarBackground() {
   )
 }
 
-function NativeThemeEventSync() {
-  const { resolvedTheme } = useTheme()
-
-  React.useEffect(() => {
-    if (!resolvedTheme) return
-
-    window.dispatchEvent(
-      new CustomEvent("kdpower:theme-change", {
-        detail: {
-          theme: resolvedTheme,
-        },
-      })
-    )
-  }, [resolvedTheme])
-
-  return null
-}
-
-function isTypingTarget(target: EventTarget | null) {
-  if (!(target instanceof HTMLElement)) {
-    return false
-  }
-
-  return (
-    target.isContentEditable ||
-    target.tagName === "INPUT" ||
-    target.tagName === "TEXTAREA" ||
-    target.tagName === "SELECT"
-  )
-}
-
 function ThemeHotkey() {
   const { resolvedTheme, setTheme } = useTheme()
 
-  React.useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.defaultPrevented || event.repeat) {
-        return
-      }
-
-      if (event.metaKey || event.ctrlKey || event.altKey) {
-        return
-      }
-
-      if (typeof event.key !== "string" || event.key.toLowerCase() !== "d") {
-        return
-      }
-
-      if (isTypingTarget(event.target)) {
-        return
-      }
-
-      setTheme(resolvedTheme === "dark" ? "light" : "dark")
-    }
-
-    window.addEventListener("keydown", onKeyDown)
-
-    return () => {
-      window.removeEventListener("keydown", onKeyDown)
-    }
-  }, [resolvedTheme, setTheme])
+  useShortcut(
+    "d",
+    () => setTheme(resolvedTheme === "dark" ? "light" : "dark"),
+    { description: "Toggle dark mode" }
+  )
 
   return null
 }
@@ -234,18 +136,9 @@ function FullscreenHotkey() {
   const isNative = useNative()
   const { toggleFullscreen } = useFullscreen()
 
-  useHotkeys(
-    "f",
-    () => {
-      void toggleFullscreen()
-    },
-    {
-      enabled: !isNative,
-      enableOnContentEditable: false,
-      enableOnFormTags: false,
-      preventDefault: true,
-    }
-  )
+  useShortcut(isNative ? null : "f", () => void toggleFullscreen(), {
+    description: "Toggle full screen",
+  })
 
   return null
 }

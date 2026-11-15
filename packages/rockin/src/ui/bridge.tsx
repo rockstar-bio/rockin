@@ -30,7 +30,9 @@ function getAppPath(value: string) {
 }
 
 function getCurrentTheme(): "light" | "dark" {
-  return document.documentElement.classList.contains("dark") ? "dark" : "light"
+  const scheme = document.documentElement.dataset.colorScheme
+  if (scheme === "light" || scheme === "dark") return scheme
+  return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
 }
 
 function syncNativeStatusBar() {
@@ -96,15 +98,18 @@ export function NativeAppBridge() {
     // Initial native appearance sync.
     syncNativeAppearance()
 
-    // Watch next-themes changing the <html> class.
+    // Follow the color scheme on <html>, and the system's while it's "system".
     const themeObserver = new MutationObserver(() => {
       syncNativeAppearance()
     })
 
     themeObserver.observe(root, {
       attributes: true,
-      attributeFilter: ["class"],
+      attributeFilter: ["data-color-scheme"],
     })
+
+    const systemScheme = matchMedia("(prefers-color-scheme: dark)")
+    systemScheme.addEventListener("change", syncNativeAppearance)
 
     let cancelled = false
     let removeAppUrlListener: (() => Promise<void>) | undefined
@@ -138,6 +143,7 @@ export function NativeAppBridge() {
       cancelled = true
 
       themeObserver.disconnect()
+      systemScheme.removeEventListener("change", syncNativeAppearance)
 
       void removeAppUrlListener?.()
 

@@ -4,3 +4,4 @@ out
 .next
 *.tsbuildinfo
 .DS_Store
+.playwright-mcp

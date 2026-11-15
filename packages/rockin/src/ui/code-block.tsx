@@ -2,7 +2,7 @@
 
 import { cn } from "cn"
 import { Check, Copy } from "lucide-react"
-import { useTheme } from "next-themes"
+import { useTheme } from "../theme"
 import * as React from "react"
 import { codeToHtml } from "shiki"
 import { IconSwap } from "../icon"

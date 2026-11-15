@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 
-import { Provider } from "rockin"
 import { cn } from "rockin/cn"
+import { Layout } from "rockin/layout"
 import "./globals.css"
 
 export const metadata: Metadata = {
@@ -16,9 +16,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" suppressHydrationWarning className={cn("antialiased")}>
       <body className={cn("root flex min-h-dvh flex-col antialiased")}>
-        <Provider>
+        <Layout>
           <main className="app-container">{children}</main>
-        </Provider>
+        </Layout>
       </body>
     </html>
   )

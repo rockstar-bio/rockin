@@ -54,6 +54,10 @@
       "types": "./dist/provider.d.ts",
       "import": "./dist/provider.js"
     },
+    "./layout": {
+      "types": "./dist/layout.d.ts",
+      "import": "./dist/layout.js"
+    },
     "./lucide": {
       "types": "./dist/lucide.d.ts",
       "import": "./dist/lucide.js"
@@ -124,6 +128,8 @@
     "@radix-ui/react-scroll-area": "^1.2.18",
     "@radix-ui/react-select": "^2.3.7",
     "@shadcn/react": "^0.3.0",
+    "@ui-sdk/core": "^0.1.0-beta.1",
+    "@ui-sdk/react": "^0.1.0-beta.1",
     "@visx/curve": "4.0.1-alpha.0",
     "@visx/event": "4.0.1-alpha.0",
     "@visx/gradient": "4.0.1-alpha.0",
@@ -146,6 +152,7 @@
     "nuqs": "^2.9.4",
     "openai": "^7.4.0",
     "qrcode": "^1.5.4",
+    "react-aria-components": "^1.22.1",
     "react-hotkeys-hook": "^5.3.3",
     "react-resizable-panels": "^4.13.3",
     "recharts": "^3.8.0",

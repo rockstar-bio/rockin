@@ -1,4 +1,10 @@
-import { copyFileSync, existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs"
+import {
+  copyFileSync,
+  existsSync,
+  readdirSync,
+  readFileSync,
+  writeFileSync,
+} from "node:fs"
 import { defineConfig } from "tsup"
 
 const publicEntries = {
@@ -6,6 +12,7 @@ const publicEntries = {
   cn: "src/cn.ts",
   loader: "src/loader.tsx",
   provider: "src/provider.tsx",
+  layout: "src/layout/index.ts",
   lucide: "src/lucide.ts",
   gravity: "src/gravity.ts",
   "icon/index": "src/icon/index.ts",
@@ -23,14 +30,20 @@ const publicEntries = {
  */
 const componentEntries = Object.fromEntries(
   readdirSync("src/ui", { withFileTypes: true }).flatMap((item) => {
-    if (item.isFile() && /\.tsx?$/.test(item.name) && item.name !== "index.ts") {
+    if (
+      item.isFile() &&
+      /\.tsx?$/.test(item.name) &&
+      item.name !== "index.ts"
+    ) {
       const name = item.name.replace(/\.tsx?$/, "")
       return [[`ui/${name}`, `src/ui/${item.name}`]]
     }
     if (item.isDirectory()) {
       return readdirSync(`src/ui/${item.name}`)
         .filter((file) => /\.tsx?$/.test(file))
-        .filter((file) => item.name !== "data-table" || file.startsWith("index"))
+        .filter(
+          (file) => item.name !== "data-table" || file.startsWith("index")
+        )
         .map((file) => [
           `ui/${item.name}/${file.replace(/\.tsx?$/, "")}`,
           `src/ui/${item.name}/${file}`,
@@ -46,17 +59,15 @@ function builtExportNames(file: string) {
   if (!block) throw new Error(`no export block in ${file}`)
   return block[1]
     .split(",")
-    .map((item) => item.trim().split(/\s+as\s+/).pop()!)
+    .map((item) =>
+      item
+        .trim()
+        .split(/\s+as\s+/)
+        .pop()!
+    )
     .filter((name) => name && name !== "default")
 }
 
-/**
- * Write dist/ui/index.js as named re-exports of the component files instead
- * of bundling it. Two rules keep Server Component imports small:
- * - no "use client" here, so each component file is its own client reference;
- * - no `export *`, because client reference proxies have unknown export names
- *   and the server bundler would then keep every component.
- */
 function writeUiBarrel() {
   const source = readFileSync("src/ui/index.ts", "utf8")
   const owners = new Map<string, string>()
@@ -68,14 +79,18 @@ function writeUiBarrel() {
           ? path
           : `${path}/index`
       if (!componentEntries[`ui/${entry}`]) {
-        throw new Error(`rockin/ui re-exports "./${path}" but it has no build entry`)
+        throw new Error(
+          `rockin/ui re-exports "./${path}" but it has no build entry`
+        )
       }
       const file = `./${entry}.js`
       if (what !== "*") return `export ${what} from "${file}"`
       const names = builtExportNames(`dist/ui/${entry}.js`)
       for (const name of names) {
         if (owners.has(name)) {
-          throw new Error(`rockin/ui exports "${name}" from both ${owners.get(name)} and ${file}`)
+          throw new Error(
+            `rockin/ui exports "${name}" from both ${owners.get(name)} and ${file}`
+          )
         }
         owners.set(name, file)
       }
@@ -95,6 +110,20 @@ export default defineConfig({
   splitting: true,
   outDir: "dist",
   external: ["react", "react-dom"],
+  // rockin/layout's Provider must reach ClientProvider through its own "use client" file,
+  // not a shared chunk, or Next runs the client provider as server code.
+  esbuildPlugins: [
+    {
+      name: "client-boundary",
+      setup(build) {
+        build.onResolve({ filter: /^\.\.\/provider$/ }, (args) =>
+          args.importer.endsWith("src/layout/layout.tsx")
+            ? { path: "./provider.js", external: true }
+            : undefined
+        )
+      },
+    },
+  ],
   async onSuccess() {
     writeUiBarrel()
     copyFileSync("src/styles/globals.css", "dist/styles.css")

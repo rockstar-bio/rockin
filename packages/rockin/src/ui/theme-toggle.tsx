@@ -3,7 +3,7 @@
 import { cn } from "cn"
 import { type VariantProps } from "class-variance-authority"
 import { motion, useReducedMotion } from "motion/react"
-import { useTheme } from "next-themes"
+import { useTheme } from "../theme"
 import { useId } from "react"
 
 import { buttonVariants } from "./button"

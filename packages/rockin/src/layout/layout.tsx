@@ -1,5 +1,6 @@
 import { cookies } from "next/headers"
 
+import { NuqsAdapter } from "#hooks/useSearchParams"
 import { preferencesScript } from "../lib/preferences"
 import { ClientProvider, type ClientProviderProps } from "../provider"
 
@@ -13,9 +14,9 @@ export async function Layout({ cookie, ...props }: LayoutProps) {
   const header = cookie ?? (await cookies()).toString()
 
   return (
-    <>
+    <NuqsAdapter>
       <script dangerouslySetInnerHTML={{ __html: preferencesScript(header) }} />
       <ClientProvider cookie={header} {...props} />
-    </>
+    </NuqsAdapter>
   )
 }

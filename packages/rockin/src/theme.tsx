@@ -24,7 +24,11 @@ export function PreferencesProvider({
   return (
     <PreferencesContext value={preferences}>
       <Preferences
-        preferences={[preferences.colorScheme, preferences.accent]}
+        preferences={[
+          preferences.colorScheme,
+          preferences.accent,
+          preferences.device,
+        ]}
       >
         {children}
       </Preferences>

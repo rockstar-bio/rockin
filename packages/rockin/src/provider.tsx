@@ -21,18 +21,12 @@ export type BrowserTheme = keyof typeof browserThemeColors
 export type BrowserThemeColors = Record<BrowserTheme, string>
 export type ClientProviderProps = {
   children?: React.ReactNode
-  /** The request's `Cookie` header, so saved preferences render on the server. */
   cookie?: string | null
   light?: string
   dark?: string
   fullscreen?: boolean
 }
 
-/**
- * The browser's theme color and page background, rendered from ui-sdk's color scheme.
- * React hoists the tags into <head> and renders them on the server, so they're right
- * before the first paint; for "system" the browser follows the device by itself.
- */
 function BrowserChrome({ light, dark }: BrowserThemeColors) {
   const { colorScheme } = usePreferences()
   const { value, resolved } = usePreference(colorScheme)
@@ -45,7 +39,7 @@ function BrowserChrome({ light, dark }: BrowserThemeColors) {
     ))
       meta.content = style
     window.dispatchEvent(
-      new CustomEvent("kdpower:theme-change", { detail: { theme: resolved } })
+      new CustomEvent("rockin:theme-change", { detail: { theme: resolved } })
     )
   }, [resolved])
 

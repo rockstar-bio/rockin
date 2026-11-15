@@ -10,7 +10,7 @@ const AnimatedDiv: React.ForwardRefExoticComponent<
     { variants, mobileVariants, className, children, infinity, ...motionProps },
     ref
   ) => {
-    const isDesktop = useMediaQuery("(min-width: 768px)")
+    const { isDesktop } = useMediaQuery()
     const selectedVariants =
       !isDesktop && mobileVariants ? mobileVariants : variants
 

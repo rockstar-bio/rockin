@@ -6,6 +6,7 @@ import {
   writeFileSync,
 } from "node:fs"
 import { defineConfig } from "tsup"
+import { writeSdkEntries } from "./scripts/sdk-entries"
 
 const publicEntries = {
   index: "src/index.ts",
@@ -100,13 +101,13 @@ function writeUiBarrel() {
   writeFileSync("dist/ui/index.js", barrel)
 }
 
-export default defineConfig({
+export default defineConfig((options) => ({
   entry: { ...publicEntries, ...componentEntries },
   format: ["esm"],
   // Types only for the public package exports.
   dts: { entry: { ...publicEntries, "ui/index": "src/ui/index.ts" } },
   sourcemap: false,
-  clean: true,
+  clean: !options.watch,
   splitting: true,
   outDir: "dist",
   external: ["react", "react-dom"],
@@ -128,5 +129,6 @@ export default defineConfig({
     writeUiBarrel()
     copyFileSync("src/styles/globals.css", "dist/styles.css")
     copyFileSync("src/styles/loader.css", "dist/loader.css")
+    writeSdkEntries()
   },
-})
+}))

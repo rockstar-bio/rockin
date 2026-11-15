@@ -1,17 +1,12 @@
-import { useEffect, useState } from "react"
+import { usePreference } from "@ui-sdk/react/preferences"
 
-export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(false)
+import { usePreferences } from "../theme"
 
-  useEffect(() => {
-    const mediaQuery = window.matchMedia(query)
-    const handleChange = () => setMatches(mediaQuery.matches)
-
-    handleChange()
-    mediaQuery.addEventListener("change", handleChange)
-
-    return () => mediaQuery.removeEventListener("change", handleChange)
-  }, [query])
-
-  return matches
+export function useMediaQuery() {
+  const device = usePreference(usePreferences().screen)
+  return {
+    device,
+    isMobile: device === "mobile",
+    isDesktop: device === "desktop",
+  }
 }

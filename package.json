@@ -18,10 +18,15 @@
     "format:check": "prettier --check ."
   },
   "devDependencies": {
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "prettier": "^3.9.8",
     "prettier-plugin-tailwindcss": "^0.8.1"
   },
   "dependencies": {
+    "next": "^16.4.6",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "rockin": "workspace:*"
   }
 }

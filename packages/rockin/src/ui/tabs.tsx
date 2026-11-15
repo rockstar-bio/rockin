@@ -217,7 +217,7 @@ export function TabsList({
                 }
                 data-no-ring
                 className={cn(
-                  `pointer-events-none absolute inset-y-0 z-10 inline-flex w-9 scale-75 items-center justify-center text-foreground opacity-0 transition-[opacity,scale] duration-200 outline-none data-visible:pointer-events-auto data-visible:scale-100 data-visible:opacity-100 motion-reduce:transition-none ${vertical}:inset-x-0 ${vertical}:inset-y-auto ${vertical}:h-9 ${vertical}:w-auto [&_svg]:size-4.5 [&_svg]:transition-opacity [&_svg]:duration-150 hover:[&_svg]:opacity-70`,
+                  `pointer-events-none absolute inset-y-0 z-10 inline-flex w-9 scale-75 items-center justify-center text-foreground opacity-0 transition-[opacity,scale] duration-200 outline-none not-supports-[animation-timeline:scroll()]:data-visible:pointer-events-auto not-supports-[animation-timeline:scroll()]:data-visible:scale-100 not-supports-[animation-timeline:scroll()]:data-visible:opacity-100 motion-reduce:transition-none ${vertical}:inset-x-0 ${vertical}:inset-y-auto ${vertical}:h-9 ${vertical}:w-auto [&_svg]:size-4.5 [&_svg]:transition-opacity [&_svg]:duration-150 hover:[&_svg]:opacity-70`,
                   ease,
                   arrowSide[side]
                 )}
@@ -234,7 +234,7 @@ export function TabsList({
               <Scroll.Viewport
                 data-no-ring
                 className={cn(
-                  "max-h-[inherit] min-w-0 flex-1 scroll-fade-x scrollbar-none outline-none [--scroll-fade-reveal:2.25rem] [--scroll-fade-size:2.25rem] in-data-[orientation=vertical]:scroll-fade-y [&::-webkit-scrollbar]:hidden"
+                  "max-h-[inherit] min-w-0 flex-1 scroll-fade-x scroll-fade scrollbar-none outline-none [--scroll-fade-reveal:2.25rem] in-data-[orientation=vertical]:scroll-fade-y [&::-webkit-scrollbar]:hidden"
                 )}
               >
                 <Scroll.Content className="w-max min-w-full">

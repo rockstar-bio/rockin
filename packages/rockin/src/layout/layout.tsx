@@ -1,6 +1,6 @@
 import { cookies } from "next/headers"
 
-import { NuqsAdapter } from "#hooks/useSearchParams"
+import { NuqsAdapter } from "nuqs/adapters/next/app"
 import { preferencesScript } from "../lib/preferences"
 import { ClientProvider, type ClientProviderProps } from "../provider"
 

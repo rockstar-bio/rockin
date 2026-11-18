@@ -623,7 +623,9 @@ select:-webkit-autofill {
       summary,
       [role="button"],
       [tabindex]:not([tabindex="-1"])
-    ):not([data-slot="input-group-control"]):not([data-no-ring]):focus-visible {
+    ):not([data-slot="input-group-control"]):not([data-slot="list-item"]):not(
+      [data-no-ring]
+    ):focus-visible {
     @apply ring-1 outline-none;
   }
 

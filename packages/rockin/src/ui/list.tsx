@@ -27,6 +27,8 @@ type ListOrientation = "vertical" | "horizontal" | "grid"
 type ListController = {
   /** Focuses an item by `value`, or the item holding the tab stop, or the first. */
   focus: (value?: string) => void
+  items: () => { value: string; label: string }[]
+  open: (target: string) => void
 }
 
 type ListOptions = {
@@ -164,8 +166,37 @@ const list = definePrimitive({
       if (store.get().highlighted !== key) store.set({ highlighted: key })
     }
 
+    const enabled = () => roving.items().filter((item) => !item.props?.disabled)
+
+    const items = () =>
+      enabled().map((item) => ({
+        value: item.key,
+        label: (item.el.getAttribute("aria-label") ?? item.el.textContent ?? "")
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, 80),
+      }))
+
     return {
       focus: (value?: string) => roving.focus(value),
+      items,
+      open(target: string) {
+        const wanted = items().find(
+          (item) =>
+            item.value === target ||
+            item.label.toLowerCase().includes(target.toLowerCase())
+        )
+        if (!wanted) {
+          throw new Error(
+            `No item "${target}". Items: ${items()
+              .map((item) => item.label)
+              .join(", ")}`
+          )
+        }
+        enabled()
+          .find((item) => item.key === wanted.value)
+          ?.el.click()
+      },
       internal: {
         roving,
         keydown(event: KeyboardEvent, el: HTMLElement) {
@@ -341,6 +372,10 @@ const list = definePrimitive({
       },
     }),
   }),
+  agent: {
+    actions: ["open", "focus"],
+    items: (api) => api.items(),
+  },
 })
 
 type ListSlot = SlotName<typeof list>
@@ -478,7 +513,8 @@ export {
   List,
   ListGroup,
   ListItem,
-  ListLabel,
   listItemVariants,
+  ListLabel,
+  list as listPrimitive,
 }
-export type { ListController, ListOrientation, ListOptions }
+export type { ListController, ListOptions, ListOrientation }

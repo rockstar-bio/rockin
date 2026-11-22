@@ -28,6 +28,9 @@ type CarouselContextProps = {
   scrollNext: () => void
   canScrollPrev: boolean
   canScrollNext: boolean
+  selectedIndex: number
+  snapCount: number
+  scrollTo: (index: number) => void
 } & CarouselProps
 
 const CarouselContext = React.createContext<CarouselContextProps | null>(null)
@@ -60,12 +63,23 @@ function Carousel({
   )
   const [canScrollPrev, setCanScrollPrev] = React.useState(false)
   const [canScrollNext, setCanScrollNext] = React.useState(false)
+  const [selectedIndex, setSelectedIndex] = React.useState(0)
+  const [snapCount, setSnapCount] = React.useState(0)
 
   const onSelect = React.useCallback((api: CarouselApi) => {
     if (!api) return
     setCanScrollPrev(api.canScrollPrev())
     setCanScrollNext(api.canScrollNext())
+    setSelectedIndex(api.selectedScrollSnap())
+    setSnapCount(api.scrollSnapList().length)
   }, [])
+
+  const scrollTo = React.useCallback(
+    (index: number) => {
+      api?.scrollTo(index)
+    },
+    [api]
+  )
 
   const scrollPrev = React.useCallback(() => {
     api?.scrollPrev()
@@ -117,6 +131,9 @@ function Carousel({
         scrollNext,
         canScrollPrev,
         canScrollNext,
+        selectedIndex,
+        snapCount,
+        scrollTo,
       }}
     >
       <div
@@ -232,12 +249,82 @@ function CarouselNext({
   )
 }
 
+type CarouselDotsProps = React.ComponentProps<"div"> & {
+  /** Accessible name for each dot. Defaults to "Slide 2 of 5". */
+  getDotLabel?: (index: number, count: number) => string
+}
+
+// Slide indicator that reads the carousel itself: no setApi/effect wiring.
+// Dots stay visually small; each button gets a 24px-wide, 44px-tall hit area.
+function CarouselDots({
+  className,
+  getDotLabel = (index, count) => `Slide ${index + 1} of ${count}`,
+  "aria-label": ariaLabel = "Choose slide",
+  ...props
+}: CarouselDotsProps) {
+  const { orientation, selectedIndex, snapCount, scrollTo } = useCarousel()
+
+  if (snapCount < 2) return null
+
+  const vertical = orientation === "vertical"
+
+  return (
+    <div
+      role="group"
+      aria-label={ariaLabel}
+      data-slot="carousel-dots"
+      className={cn(
+        "flex items-center justify-center",
+        vertical && "flex-col",
+        className
+      )}
+      {...props}
+    >
+      {Array.from({ length: snapCount }, (_, index) => {
+        const active = index === selectedIndex
+        return (
+          <button
+            key={index}
+            type="button"
+            data-slot="carousel-dot"
+            data-active={active ? "" : undefined}
+            aria-label={getDotLabel(index, snapCount)}
+            aria-current={active ? "true" : undefined}
+            onClick={() => scrollTo(index)}
+            className={cn(
+              "group/dot relative flex touch-manipulation items-center justify-center rounded-full outline-none",
+              "after:absolute after:content-['']",
+              vertical
+                ? "min-h-6 w-6 py-1 after:-inset-x-2.5 after:inset-y-0"
+                : "h-6 min-w-6 px-1 after:inset-x-0 after:-inset-y-2.5"
+            )}
+          >
+            <span
+              aria-hidden="true"
+              className={cn(
+                "block size-1.5 rounded-full bg-muted-foreground/45 transition-[width,height,background-color] duration-200 ease-out motion-reduce:transition-none",
+                "group-hover/dot:bg-muted-foreground/70 group-focus-visible/dot:ring-2 group-focus-visible/dot:ring-ring/50 group-focus-visible/dot:ring-offset-1 group-focus-visible/dot:ring-offset-background",
+                "group-data-active/dot:bg-foreground",
+                vertical
+                  ? "group-data-active/dot:h-5"
+                  : "group-data-active/dot:w-5"
+              )}
+            />
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 export {
   Carousel,
   CarouselContent,
+  CarouselDots,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
   useCarousel,
   type CarouselApi,
+  type CarouselDotsProps,
 }

@@ -12,10 +12,15 @@ export const DEVICES = ["mobile", "desktop"] as const
 export type Device = (typeof DEVICES)[number]
 export const MOBILE_QUERY = "(max-width: 767px)"
 
+/** How a collection of items is laid out: a grid of cards or a list of rows. */
+export const VIEWS = ["grid", "list"] as const
+export type View = (typeof VIEWS)[number]
+
 export const PREFERENCE_COOKIES = {
   colorScheme: "color-scheme",
   accent: "accent",
   device: "device",
+  view: "view",
 } as const
 
 /**
@@ -45,6 +50,13 @@ export function createAppPreferences(cookie?: string | null) {
     }),
     device,
     screen: createScreen(device),
+    view: createPreference({
+      values: VIEWS,
+      defaultValue: "grid",
+      attribute: "data-view",
+      global: true,
+      storage: createCookieStorage(PREFERENCE_COOKIES.view, { cookie }),
+    }),
   }
 }
 
@@ -73,11 +85,12 @@ export type AppPreferences = ReturnType<typeof createAppPreferences>
 
 /** The `<html>` attributes for a request's saved preferences. */
 export function preferenceAttributes(cookie?: string | null) {
-  const { colorScheme, accent, device } = createAppPreferences(cookie)
+  const { colorScheme, accent, device, view } = createAppPreferences(cookie)
   return {
     [colorScheme.attribute]: colorScheme.initialState.value,
     [accent.attribute]: accent.initialState.value,
     [device.attribute]: device.initialState.value,
+    [view.attribute]: view.initialState.value,
   } as Record<`data-${string}`, string>
 }
 

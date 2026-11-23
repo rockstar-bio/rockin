@@ -7,12 +7,12 @@ import {
   createAppPreferences,
   type Accent,
   type AppPreferences,
+  type View,
 } from "./lib/preferences"
 
 const PreferencesContext = createContext<AppPreferences | null>(null)
 let standalone: AppPreferences | undefined
 
-/** One set of preferences per request, created from its cookies, as ui-sdk's server rendering docs describe. */
 export function PreferencesProvider({
   cookie,
   children,
@@ -28,6 +28,7 @@ export function PreferencesProvider({
           preferences.colorScheme,
           preferences.accent,
           preferences.device,
+          preferences.view,
         ]}
       >
         {children}
@@ -45,7 +46,6 @@ export function usePreferences() {
 const includes = (values: readonly string[], value: string) =>
   values.includes(value)
 
-// Page colors switch at once instead of animating; tab lists, like the theme switcher, keep theirs.
 function withoutTransitions(apply: () => void) {
   const style = document.createElement("style")
   style.textContent =
@@ -56,7 +56,6 @@ function withoutTransitions(apply: () => void) {
   requestAnimationFrame(() => style.remove())
 }
 
-/** The theme as next-themes shaped it, backed by ui-sdk's color scheme. */
 export function useTheme() {
   const { colorScheme } = usePreferences()
   const { value, system, resolved } = usePreference(colorScheme)
@@ -73,7 +72,6 @@ export function useTheme() {
   }
 }
 
-/** The accent theme, applied as `data-accent` on `<html>`. */
 export function useAccent() {
   const { accent } = usePreferences()
   const { value } = usePreference(accent)
@@ -85,5 +83,17 @@ export function useAccent() {
       if (includes(accent.values, next))
         withoutTransitions(() => accent.set(next as Accent))
     },
+  }
+}
+
+export function useView() {
+  const { view } = usePreferences()
+  const { value } = usePreference(view)
+
+  return {
+    view: value,
+    views: view.values,
+    setView: (next: View) => view.set(next),
+    toggleView: () => view.set(value === "grid" ? "list" : "grid"),
   }
 }

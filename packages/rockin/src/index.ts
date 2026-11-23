@@ -10,4 +10,5 @@ export {
   useAccent,
   usePreferences,
   useTheme,
+  useView,
 } from "./theme"

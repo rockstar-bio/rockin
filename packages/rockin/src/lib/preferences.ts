@@ -12,7 +12,6 @@ export const DEVICES = ["mobile", "desktop"] as const
 export type Device = (typeof DEVICES)[number]
 export const MOBILE_QUERY = "(max-width: 767px)"
 
-/** How a collection of items is laid out: a grid of cards or a list of rows. */
 export const VIEWS = ["grid", "list"] as const
 export type View = (typeof VIEWS)[number]
 
@@ -23,10 +22,6 @@ export const PREFERENCE_COOKIES = {
   view: "view",
 } as const
 
-/**
- * The app's saved preferences, kept in cookies so the server renders them too.
- * Create them once per request from its `Cookie` header.
- */
 export function createAppPreferences(cookie?: string | null) {
   const device = createPreference({
     values: DEVICES,
@@ -83,7 +78,6 @@ function createScreen(device: Preference<Device>) {
 
 export type AppPreferences = ReturnType<typeof createAppPreferences>
 
-/** The `<html>` attributes for a request's saved preferences. */
 export function preferenceAttributes(cookie?: string | null) {
   const { colorScheme, accent, device, view } = createAppPreferences(cookie)
   return {
@@ -94,7 +88,6 @@ export function preferenceAttributes(cookie?: string | null) {
   } as Record<`data-${string}`, string>
 }
 
-/** Sets the saved preferences on `<html>` while the page parses, before it paints. */
 export function preferencesScript(cookie?: string | null) {
   return `(()=>{const r=document.documentElement;for(const[k,v]of Object.entries(${JSON.stringify(
     preferenceAttributes(cookie)

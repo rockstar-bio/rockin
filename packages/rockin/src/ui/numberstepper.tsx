@@ -31,7 +31,7 @@ const sizeStyles = {
   sm: {
     container: "h-7 p-0.5",
     button: "size-6",
-    value: "w-7",
+    value: "w-10",
     text: "text-sm",
     icon: "size-3.5",
   },
@@ -194,6 +194,7 @@ type NumberStepperProps = {
   /** When set, the − button becomes a delete button once the value is at `min`. */
   onRemove?: () => void
   removeLabel?: string
+  placeholder?: string
   onFocus?: React.FocusEventHandler<HTMLInputElement>
   onKeyDown?: React.KeyboardEventHandler<HTMLInputElement>
   onKeyDownCapture?: React.KeyboardEventHandler<HTMLInputElement>
@@ -214,6 +215,7 @@ export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
       disabled = false,
       onRemove,
       removeLabel = "Remove",
+      placeholder = "0",
       onFocus,
       onKeyDown,
       onKeyDownCapture,
@@ -411,6 +413,7 @@ export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
     )
 
     const editing = draft !== null
+    const showPlaceholder = placeholder !== undefined && value === 0
 
     return (
       <div
@@ -445,7 +448,8 @@ export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
             aria-valuemax={max}
             inputMode="numeric"
             autoComplete="off"
-            value={draft ?? String(value)}
+            placeholder={placeholder}
+            value={draft ?? (showPlaceholder ? "" : String(value))}
             onChange={(event) => {
               setDraft(event.target.value.replace(/\D/g, ""))
             }}
@@ -488,11 +492,12 @@ export const NumberStepper = forwardRef<HTMLInputElement, NumberStepperProps>(
               "col-start-1 row-start-1 w-full bg-transparent text-center tabular-nums caret-foreground outline-hidden selection:bg-ring/25 selection:text-foreground disabled:cursor-not-allowed",
               styles.text,
               look.text,
-              editing ? "text-foreground" : "text-transparent"
+              editing ? "text-foreground" : "text-transparent",
+              "placeholder:text-muted-foreground"
             )}
           />
 
-          {!editing && (
+          {!editing && !showPlaceholder && (
             <RollingNumber
               value={value}
               className={cn(

@@ -26,7 +26,7 @@ const publicEntries = {
 /**
  * One build entry per UI component. A single bundled `ui/index.js` makes apps
  * that import one component from `rockin/ui` also ship recharts, shiki,
- * dnd-kit, ariakit, etc. Separate files let `sideEffects: false` drop the
+ * dnd-kit, recharts, etc. Separate files let `sideEffects: false` drop the
  * components an app doesn't use. Each component file owns its "use client".
  */
 const componentEntries = Object.fromEntries(
